@@ -147,7 +147,7 @@ final class TakumiFfi
     {
         $ffi = self::instance();
         $ptr = $ffi->takumi_get_last_error();
-        $msg = ($ptr !== null && !\FFI::isNull($ptr)) ? \FFI::string($ptr) : 'unknown error';
+        $msg = ($ptr !== null && ! \FFI::isNull($ptr)) ? \FFI::string($ptr) : 'unknown error';
         $ffi->takumi_clear_last_error();
         $prefix = $context !== '' ? "{$context}: " : '';
         throw new Exception\RuntimeException("{$prefix}{$msg}");
