@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace HtmlShot;
 
+use FFI\CData;
+
 /**
  * A rendering context that holds font caches and persistent image state.
  *
@@ -17,7 +19,7 @@ namespace HtmlShot;
  */
 final class Context
 {
-    private \FFI\CData $handle;
+    private CData $handle;
 
     public function __construct()
     {
@@ -33,7 +35,7 @@ final class Context
     }
 
     /** @internal Used by Renderer */
-    public function ffiHandle(): \FFI\CData
+    public function ffiHandle(): CData
     {
         return $this->handle;
     }
@@ -41,10 +43,11 @@ final class Context
     /**
      * Load a font from a file path.
      *
-     * @param string $path   Absolute path to a TTF / OTF / WOFF / WOFF2 file.
-     * @param string $family Override family name (empty = auto-detect from font metadata).
-     * @param int    $weight Override weight 1–1000 (0 = auto-detect).
-     * @param string $style  Override style: "normal" | "italic" | "oblique" (empty = auto-detect).
+     * @param  string  $path  Absolute path to a TTF / OTF / WOFF / WOFF2 file.
+     * @param  string  $family  Override family name (empty = auto-detect from font metadata).
+     * @param  int  $weight  Override weight 1–1000 (0 = auto-detect).
+     * @param  string  $style  Override style: "normal" | "italic" | "oblique" (empty = auto-detect).
+     *
      * @throws Exception\RuntimeException on failure.
      */
     public function loadFontFile(
@@ -68,10 +71,11 @@ final class Context
     /**
      * Load a font from raw bytes (e.g. read via file_get_contents).
      *
-     * @param string $data   Raw font file bytes.
-     * @param string $family Override family name (empty = auto-detect).
-     * @param int    $weight Override weight 1–1000 (0 = auto-detect).
-     * @param string $style  Override style: "normal" | "italic" | "oblique" (empty = auto-detect).
+     * @param  string  $data  Raw font file bytes.
+     * @param  string  $family  Override family name (empty = auto-detect).
+     * @param  int  $weight  Override weight 1–1000 (0 = auto-detect).
+     * @param  string  $style  Override style: "normal" | "italic" | "oblique" (empty = auto-detect).
+     *
      * @throws Exception\RuntimeException on failure.
      */
     public function loadFontData(

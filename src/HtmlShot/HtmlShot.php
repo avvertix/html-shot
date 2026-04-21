@@ -29,7 +29,7 @@ final class HtmlShot
     /**
      * Render HTML to image bytes.
      *
-     * @param string $html    HTML content to render.
+     * @param  string  $html  HTML content to render.
      * @param array{
      *     width?: int,
      *     height?: int,
@@ -39,13 +39,13 @@ final class HtmlShot
      *     fonts?: Font[],
      *     devicePixelRatio?: float,
      * } $options
-     *
      * @return string Raw image bytes.
+     *
      * @throws Exception\RuntimeException on failure.
      */
     public static function render(string $html, array $options = []): string
     {
-        $context = new Context();
+        $context = new Context;
 
         foreach ($options['fonts'] ?? [] as $font) {
             if ($font instanceof Font) {

@@ -24,10 +24,10 @@ final class Font
     /**
      * Create a Font descriptor that loads from a file path.
      *
-     * @param string $path   Absolute path to a TTF / OTF / WOFF / WOFF2 file.
-     * @param string $family Override family name (empty = auto-detect).
-     * @param int    $weight Override weight 1–1000 (0 = auto-detect).
-     * @param string $style  Override style: "normal" | "italic" | "oblique".
+     * @param  string  $path  Absolute path to a TTF / OTF / WOFF / WOFF2 file.
+     * @param  string  $family  Override family name (empty = auto-detect).
+     * @param  int  $weight  Override weight 1–1000 (0 = auto-detect).
+     * @param  string  $style  Override style: "normal" | "italic" | "oblique".
      */
     public static function fromFile(
         string $path,
@@ -41,10 +41,10 @@ final class Font
     /**
      * Create a Font descriptor from raw bytes (e.g. from file_get_contents).
      *
-     * @param string $data   Raw font file bytes.
-     * @param string $family Override family name (empty = auto-detect).
-     * @param int    $weight Override weight 1–1000 (0 = auto-detect).
-     * @param string $style  Override style: "normal" | "italic" | "oblique".
+     * @param  string  $data  Raw font file bytes.
+     * @param  string  $family  Override family name (empty = auto-detect).
+     * @param  int  $weight  Override weight 1–1000 (0 = auto-detect).
+     * @param  string  $style  Override style: "normal" | "italic" | "oblique".
      */
     public static function fromData(
         string $data,
