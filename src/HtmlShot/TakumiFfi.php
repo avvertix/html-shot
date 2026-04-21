@@ -11,25 +11,46 @@ use FFI\CData;
  *
  * Resolves the compiled library and header from the `lib/` and `include/` directories
  * relative to the package root. PHP must have `ext-ffi` enabled.
+ *
+ * @method ?CData takumi_get_last_error()
+ * @method void takumi_clear_last_error()
+ * @method ?CData takumi_context_new()
+ * @method void takumi_context_free(CData $handle)
+ * @method int takumi_context_load_font_data(CData $handle, CData $data, int $data_len, ?CData $family, int $weight, ?CData $style)
+ * @method int takumi_context_load_font_file(CData $handle, CData $path, ?CData $family, int $weight, ?CData $style)
+ * @method ?CData takumi_output_bytes(CData $handle, CData $out_len)
+ * @method int takumi_output_size(CData $handle)
+ * @method int takumi_output_save(CData $handle, CData $path)
+ * @method void takumi_output_free(CData $handle)
+ * @method ?CData takumi_render_html(CData $ctx, CData $html, ?CData $stylesheets, int $stylesheets_len, int $width, int $height, float $device_pixel_ratio, CData $format, int $quality)
+ * @method ?CData new(string $type, bool $owned = true, bool $persistent = false)
  */
-final class Ffi
+final class TakumiFfi
 {
-    private static ?\FFI $instance = null;
+    private static ?self $singleton = null;
 
-    private function __construct() {}
+    private function __construct(
+        private readonly \FFI $ffi,
+    ) {}
 
     /**
      * Return the shared FFI instance, loading it on first call.
      *
      * @throws \RuntimeException if the library or header cannot be found.
      */
-    public static function instance(): \FFI
+    public static function instance(): self
     {
-        if (self::$instance === null) {
-            self::$instance = self::load();
+        if (self::$singleton === null) {
+            self::$singleton = new self(self::load());
         }
 
-        return self::$instance;
+        return self::$singleton;
+    }
+
+    /** @param mixed[] $args */
+    public function __call(string $name, array $args): mixed
+    {
+        return $this->ffi->$name(...$args);
     }
 
     private static function load(): \FFI
@@ -108,6 +129,9 @@ final class Ffi
         $ffi = self::instance();
         $len = strlen($s);
         $buf = $ffi->new('char['.($len + 1).']', false);
+        if ($buf === null) {
+            throw new Exception\RuntimeException('FFI memory allocation failed');
+        }
         \FFI::memcpy($buf, $s, $len);
         $buf[$len] = "\0";
 
@@ -122,23 +146,19 @@ final class Ffi
     public static function throwLastError(string $context = ''): never
     {
         $ffi = self::instance();
-        $msg = $ffi->takumi_get_last_error() ?? 'unknown error';
+        $ptr = $ffi->takumi_get_last_error();
+        $msg = ($ptr !== null && !\FFI::isNull($ptr)) ? \FFI::string($ptr) : 'unknown error';
         $ffi->takumi_clear_last_error();
         $prefix = $context !== '' ? "{$context}: " : '';
         throw new Exception\RuntimeException("{$prefix}{$msg}");
     }
 
     /**
-     * Assert that a handle is non-null; throw with the last error otherwise.
-     *
-     * @template T
-     *
-     * @param  T|null  $handle
-     * @return T
+     * Assert that a CData handle is non-null; throw with the last error otherwise.
      *
      * @throws Exception\RuntimeException on null handle
      */
-    public static function assertHandle(mixed $handle, string $context = ''): mixed
+    public static function assertHandle(?CData $handle, string $context = ''): CData
     {
         if ($handle === null || \FFI::isNull($handle)) {
             self::throwLastError($context);

@@ -23,15 +23,15 @@ final class Context
 
     public function __construct()
     {
-        $this->handle = Ffi::assertHandle(
-            Ffi::instance()->takumi_context_new(),
+        $this->handle = TakumiFfi::assertHandle(
+            TakumiFfi::instance()->takumi_context_new(),
             'Context::__construct'
         );
     }
 
     public function __destruct()
     {
-        Ffi::instance()->takumi_context_free($this->handle);
+        TakumiFfi::instance()->takumi_context_free($this->handle);
     }
 
     /** @internal Used by Renderer */
@@ -56,15 +56,15 @@ final class Context
         int $weight = 0,
         string $style = ''
     ): void {
-        $result = Ffi::instance()->takumi_context_load_font_file(
+        $result = TakumiFfi::instance()->takumi_context_load_font_file(
             $this->handle,
-            Ffi::cstring($path),
-            $family !== '' ? Ffi::cstring($family) : null,
+            TakumiFfi::cstring($path),
+            $family !== '' ? TakumiFfi::cstring($family) : null,
             $weight,
-            $style !== '' ? Ffi::cstring($style) : null,
+            $style !== '' ? TakumiFfi::cstring($style) : null,
         );
         if ($result !== 0) {
-            Ffi::throwLastError('Context::loadFontFile');
+            TakumiFfi::throwLastError('Context::loadFontFile');
         }
     }
 
@@ -84,21 +84,24 @@ final class Context
         int $weight = 0,
         string $style = ''
     ): void {
-        $ffi = Ffi::instance();
+        $ffi = TakumiFfi::instance();
         $len = strlen($data);
         $buf = $ffi->new("uint8_t[{$len}]", false);
+        if ($buf === null) {
+            throw new Exception\RuntimeException('FFI memory allocation failed');
+        }
         \FFI::memcpy($buf, $data, $len);
 
-        $result = $ffi->takumi_context_load_font_data(
+        $result = TakumiFfi::instance()->takumi_context_load_font_data(
             $this->handle,
             $buf,
             $len,
-            $family !== '' ? Ffi::cstring($family) : null,
+            $family !== '' ? TakumiFfi::cstring($family) : null,
             $weight,
-            $style !== '' ? Ffi::cstring($style) : null,
+            $style !== '' ? TakumiFfi::cstring($style) : null,
         );
         if ($result !== 0) {
-            Ffi::throwLastError('Context::loadFontData');
+            TakumiFfi::throwLastError('Context::loadFontData');
         }
     }
 }

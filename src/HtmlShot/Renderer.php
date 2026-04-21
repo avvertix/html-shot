@@ -31,7 +31,7 @@ final class Renderer
      * @param  int  $height  Logical canvas height in pixels (default 628).
      * @param  string  $format  Output format: "png" | "webp" | "jpeg" (default "png").
      * @param  int  $quality  Encoding quality 1–100 for JPEG/WebP (0 = library default).
-     * @param  array  $stylesheets  Additional CSS stylesheets to apply.
+     * @param  string[]  $stylesheets  Additional CSS stylesheets to apply.
      * @param  float  $devicePixelRatio  Output scale factor: 1.0 = normal, 2.0 = HiDPI/Retina.
      *                                   Layout stays at $width×$height logical px; the output bitmap
      *                                   is ($width * dpr) × ($height * dpr) physical pixels.
@@ -48,7 +48,7 @@ final class Renderer
         array $stylesheets = [],
         float $devicePixelRatio = 1.0,
     ): string {
-        $ffi = Ffi::instance();
+        $ffi = TakumiFfi::instance();
 
         // Build a C array of char* pointers for the stylesheets
         [$cssptrs, $cssBufs, $cssLen] = self::buildStringArray($stylesheets);
@@ -59,13 +59,13 @@ final class Renderer
 
         $output = $ffi->takumi_render_html(
             $this->context->ffiHandle(),
-            Ffi::cstring($html),
+            TakumiFfi::cstring($html),
             $cssLen > 0 ? $cssptrs : null,
             $cssLen,
             $physicalWidth,
             $physicalHeight,
             (float) $devicePixelRatio,
-            Ffi::cstring($format),
+            TakumiFfi::cstring($format),
             $quality,
         );
 
@@ -73,15 +73,18 @@ final class Renderer
         unset($cssBufs, $cssptrs);
 
         if ($output === null || \FFI::isNull($output)) {
-            Ffi::throwLastError('Renderer::render');
+            TakumiFfi::throwLastError('Renderer::render');
         }
 
         try {
             $lenPtr = $ffi->new('size_t');
+            if ($lenPtr === null) {
+                throw new Exception\RuntimeException('FFI memory allocation failed');
+            }
             $bytesPtr = $ffi->takumi_output_bytes($output, \FFI::addr($lenPtr));
 
             if ($bytesPtr === null || \FFI::isNull($bytesPtr)) {
-                Ffi::throwLastError('Renderer::render (output_bytes)');
+                TakumiFfi::throwLastError('Renderer::render (output_bytes)');
             }
 
             return \FFI::string($bytesPtr, (int) $lenPtr->cdata);
@@ -97,7 +100,7 @@ final class Renderer
      * Both $ptrs and $bufs must remain in scope during the FFI call.
      *
      * @param  string[]  $strings
-     * @return array{0: CData|null, 1: CData[], 2: int}
+     * @return array{CData|null,CData[],int}
      */
     private static function buildStringArray(array $strings): array
     {
@@ -106,13 +109,16 @@ final class Renderer
             return [null, [], 0];
         }
 
-        $ffi = Ffi::instance();
+        $ffi = TakumiFfi::instance();
         $ptrs = $ffi->new("char*[{$count}]", false);
         $bufs = [];
 
         foreach (array_values($strings) as $i => $s) {
             $len = strlen($s);
             $buf = $ffi->new('char['.($len + 1).']', false);
+            if ($buf === null) {
+                throw new Exception\RuntimeException('FFI memory allocation failed');
+            }
             \FFI::memcpy($buf, $s, $len);
             $buf[$len] = "\0";
             $ptrs[$i] = $buf;
