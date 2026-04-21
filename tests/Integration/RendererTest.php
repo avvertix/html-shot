@@ -119,5 +119,4 @@ class RendererTest extends TestCase
         $this->assertSame(1200, imagesx($img));
         $this->assertSame(628, imagesy($img));
     }
-
 }
