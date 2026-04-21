@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build for ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            lib_src: rust/target/debug/libtakumi_php.so
+            lib_dst: lib/libtakumi_php.so
+            artifact: libtakumi_php-linux
+          - os: macos-latest
+            lib_src: rust/target/debug/libtakumi_php.dylib
+            lib_dst: lib/libtakumi_php.dylib
+            artifact: libtakumi_php-macos
+          - os: windows-latest
+            lib_src: rust/target/debug/takumi_php.dll
+            lib_dst: lib/takumi_php.dll
+            artifact: libtakumi_php-windows
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            rust/target
+          key: ${{ runner.os }}-cargo-release-${{ hashFiles('rust/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-release
+
+      - name: Build Rust library (release)
+        working-directory: rust
+        run: cargo build --release
+
+      - name: Stage library
+        shell: bash
+        run: cp ${{ matrix.lib_src }} ${{ matrix.lib_dst }}
+
+      - name: Upload to GitHub Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.lib_dst }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
