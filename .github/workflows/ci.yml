@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    name: Build Rust (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            lib_src: rust/target/debug/libtakumi_php.so
+            lib_dst: lib/libtakumi_php.so
+            artifact: libtakumi_php-linux
+          - os: macos-latest
+            lib_src: rust/target/debug/libtakumi_php.dylib
+            lib_dst: lib/libtakumi_php.dylib
+            artifact: libtakumi_php-macos
+          - os: windows-latest
+            lib_src: rust/target/debug/takumi_php.dll
+            lib_dst: lib/takumi_php.dll
+            artifact: libtakumi_php-windows
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            rust/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('rust/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Run Rust tests
+        working-directory: rust
+        run: cargo test
+
+      - name: Build Rust library (debug)
+        working-directory: rust
+        run: cargo build
+
+      - name: Stage library for upload
+        shell: bash
+        run: |
+          mkdir -p lib
+          cp ${{ matrix.lib_src }} ${{ matrix.lib_dst }}
+
+      - name: Upload library artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.lib_dst }}
+          retention-days: 1
+
+  test:
+    name: PHP ${{ matrix.php }} (${{ matrix.os }})
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        php: [8.3, 8.4]
+        include:
+          - os: ubuntu-latest
+            lib_dst: lib/libtakumi_php.so
+            artifact: libtakumi_php-linux
+          - os: macos-latest
+            lib_dst: lib/libtakumi_php.dylib
+            artifact: libtakumi_php-macos
+          - os: windows-latest
+            lib_dst: lib/takumi_php.dll
+            artifact: libtakumi_php-windows
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Download library artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ matrix.artifact }}
+          path: lib
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: ffi, gd, exif, fileinfo
+          coverage: none
+
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@v4
+
+      - name: Run PHP tests
+        run: composer test

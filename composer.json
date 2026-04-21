@@ -1,0 +1,31 @@
+{
+  "name": "avvertix/html-shot",
+  "description": "HTML to image rendering for PHP, powered by Rust and Takumi",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": "^8.3",
+    "ext-ffi": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^12.0",
+    "phpstan/phpstan": "^2.0",
+    "symfony/var-dumper": "^6.4|^7.0|^8.0",
+    "laravel/pint": "^1.29"
+  },
+  "autoload": {
+    "psr-4": {
+      "HtmlShot\\": "src/HtmlShot/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "HtmlShot\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit",
+    "lint": "vendor/bin/phpstan analyse",
+    "format": "vendor/bin/pint"
+  }
+}
