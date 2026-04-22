@@ -6,3 +6,7 @@ parameters:
 	universalObjectCratesClasses:
 		- FFI
 		- FFI\CData
+	ignoreErrors:
+		-
+			identifier: class.notFound
+			path: src/HtmlShot/Composer/Installer.php
