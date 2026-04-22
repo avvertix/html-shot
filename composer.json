@@ -32,9 +32,9 @@
   },
   "extra": {
     "artifacts": {
-      "linux-x86_64": "https://github.com/avvertix/html-shot/releases/download/v0.0.1/libtakumi_php.so",
-      "darwin-arm64": "https://github.com/avvertix/html-shot/releases/download/v0.0.1/libtakumi_php.dylib",
-      "windows-64": "https://github.com/avvertix/html-shot/releases/download/v0.0.1/takumi_php.dll"
+      "linux-x86_64": "https://github.com/avvertix/html-shot/releases/download/v0.1.0/libtakumi_php.so",
+      "darwin-arm64": "https://github.com/avvertix/html-shot/releases/download/v0.1.0/libtakumi_php.dylib",
+      "windows-64": "https://github.com/avvertix/html-shot/releases/download/v0.1.0/takumi_php.dll"
     }
   },
   "archive": {
