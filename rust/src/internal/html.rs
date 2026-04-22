@@ -105,6 +105,30 @@ fn convert_node(
                 return Some(Node::text("\n".to_string()));
             }
 
+            // <svg> — serialize the whole subtree back to SVG markup and treat it
+            // as an image source so resvg can rasterize it.
+            if tag == "svg" {
+                if let Some(el) = scraper::ElementRef::wrap(node_ref) {
+                    let mut svg_markup = el.html();
+                    // html5ever may drop the xmlns attribute when serializing SVG
+                    // in an HTML context; takumi's is_svg_like() requires it.
+                    if !svg_markup.contains("xmlns") {
+                        svg_markup = svg_markup
+                            .replacen("<svg", r#"<svg xmlns="http://www.w3.org/2000/svg""#, 1);
+                    }
+                    let node = match (
+                        element.attr("width").and_then(|w| w.parse::<f32>().ok()),
+                        element.attr("height").and_then(|h| h.parse::<f32>().ok()),
+                    ) {
+                        (Some(w), Some(h)) => Node::image((svg_markup.as_str(), w, h)),
+                        _ => Node::image(svg_markup.as_str()),
+                    };
+                    let node = apply_metadata(node, element, extra_css, counter);
+                    return Some(node);
+                }
+                return None;
+            }
+
             // <img> — image node
             if tag == "img" {
                 let src = element.attr("src").unwrap_or("").to_string();
@@ -235,6 +259,45 @@ mod tests {
             css[0].contains("_tk_inline_"),
             "CSS rule doesn't reference expected class: {}",
             css[0]
+        );
+    }
+
+    #[test]
+    fn inline_svg_renders_opaque() {
+        // A red square drawn as inline SVG — should produce non-transparent pixels.
+        let image = render_html(
+            r#"<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+                 <rect width="200" height="200" fill="red"/>
+               </svg>"#,
+        );
+        let p = image.get_pixel(100, 100);
+        assert!(
+            p[3] > 0,
+            "expected opaque pixel at (100,100) from inline SVG, got transparent; RGBA={p:?}"
+        );
+        assert!(
+            p[0] > 200,
+            "expected red pixel at (100,100) from inline SVG; RGBA={p:?}"
+        );
+    }
+
+    #[test]
+    fn inline_svg_respects_width_height_attributes() {
+        // SVG is 50×50 but placed in a 200×200 canvas — pixel at (150,150) must be
+        // transparent, proving the image node was sized to 50×50 and not stretched.
+        let image = render_html(
+            r#"<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+                 <rect width="50" height="50" fill="blue"/>
+               </svg>"#,
+        );
+        let inside = image.get_pixel(25, 25);
+        assert!(inside[3] > 0, "expected opaque pixel inside the SVG at (25,25); RGBA={inside:?}");
+        assert!(inside[2] > 150, "expected blue pixel inside the SVG at (25,25); RGBA={inside:?}");
+
+        let outside = image.get_pixel(150, 150);
+        assert!(
+            outside[3] == 0,
+            "expected transparent pixel outside the 50×50 SVG at (150,150); RGBA={outside:?}"
         );
     }
 
