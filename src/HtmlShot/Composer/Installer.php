@@ -8,12 +8,27 @@ use Composer\Script\Event;
 
 class Installer
 {
+    private const PACKAGE_NAME = 'avvertix/html-shot';
+
     public static function downloadArtifact(Event $event): void
     {
         $composer = $event->getComposer();
         $io = $event->getIO();
 
-        $extra = $composer->getPackage()->getExtra();
+        // Look up this package in the local repository so we read its own
+        // composer.json rather than the root project's composer.json.
+        $localRepo = $composer->getRepositoryManager()->getLocalRepository();
+        $package = $localRepo->findPackage(self::PACKAGE_NAME, '*');
+
+        if ($package !== null) {
+            $packageRoot = $composer->getInstallationManager()->getInstallPath($package);
+            $extra = $package->getExtra();
+        } else {
+            // Package is the root (development mode).
+            $packageRoot = dirname(__DIR__, 3);
+            $extra = $composer->getPackage()->getExtra();
+        }
+
         $artifacts = $extra['artifacts'] ?? [];
 
         if ($artifacts === []) {
@@ -38,7 +53,6 @@ class Installer
             return;
         }
 
-        $packageRoot = dirname(__DIR__, 3);
         $libDir = $packageRoot.'/lib';
 
         if (! is_dir($libDir) && ! mkdir($libDir, 0755, true)) {
