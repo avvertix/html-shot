@@ -35,6 +35,8 @@ final class Renderer
      * @param  float  $devicePixelRatio  Output scale factor: 1.0 = normal, 2.0 = HiDPI/Retina.
      *                                   Layout stays at $width×$height logical px; the output bitmap
      *                                   is ($width * dpr) × ($height * dpr) physical pixels.
+     * @param  float  $baseFontSize  Root font size in pixels for `rem` and initial `em` resolution.
+     *                               Matches the browser's `<html>` font-size. Default is 16 px.
      * @return string Raw image bytes.
      *
      * @throws Exception\RuntimeException on render failure.
@@ -47,6 +49,7 @@ final class Renderer
         int $quality = 0,
         array $stylesheets = [],
         float $devicePixelRatio = 1.0,
+        float $baseFontSize = 16.0,
     ): string {
         $ffi = TakumiFfi::instance();
 
@@ -67,6 +70,7 @@ final class Renderer
             (float) $devicePixelRatio,
             TakumiFfi::cstring($format),
             $quality,
+            $baseFontSize,
         );
 
         // $cssBufs must stay in scope until the FFI call returns
