@@ -112,6 +112,8 @@ void takumi_output_free(struct OutputHandle *handle);
  *   layout still happens at the logical dimensions.  Pass 0.0 to use 1.0.
  * - `format`: output format string "png" | "webp" | "jpeg" (null = "png")
  * - `quality`: JPEG/WebP quality 1–100 (0 = library default)
+ * - `base_font_size`: root font size in pixels used for `rem` and initial `em` resolution.
+ *   Pass 0.0 to use the default (16 px, matching the browser default).
  *
  * Returns an `OutputHandle` on success, or null on error.
  * The caller must free the handle with `takumi_output_free`.
@@ -124,6 +126,7 @@ struct OutputHandle *takumi_render_html(const struct ContextHandle *ctx,
                                         uint32_t height,
                                         float device_pixel_ratio,
                                         const char *format,
-                                        uint8_t quality);
+                                        uint8_t quality,
+                                        float base_font_size);
 
 #endif /* TAKUMI_PHP_H */

@@ -22,7 +22,7 @@ use FFI\CData;
  * @method int takumi_output_size(CData $handle)
  * @method int takumi_output_save(CData $handle, CData $path)
  * @method void takumi_output_free(CData $handle)
- * @method ?CData takumi_render_html(CData $ctx, CData $html, ?CData $stylesheets, int $stylesheets_len, int $width, int $height, float $device_pixel_ratio, CData $format, int $quality)
+ * @method ?CData takumi_render_html(CData $ctx, CData $html, ?CData $stylesheets, int $stylesheets_len, int $width, int $height, float $device_pixel_ratio, CData $format, int $quality, float $base_font_size)
  * @method ?CData new(string $type, bool $owned = true, bool $persistent = false)
  */
 final class TakumiFfi

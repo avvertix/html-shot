@@ -25,6 +25,8 @@ use crate::error::set_last_error;
 ///   layout still happens at the logical dimensions.  Pass 0.0 to use 1.0.
 /// - `format`: output format string "png" | "webp" | "jpeg" (null = "png")
 /// - `quality`: JPEG/WebP quality 1–100 (0 = library default)
+/// - `base_font_size`: root font size in pixels used for `rem` and initial `em` resolution.
+///   Pass 0.0 to use the default (16 px, matching the browser default).
 ///
 /// Returns an `OutputHandle` on success, or null on error.
 /// The caller must free the handle with `takumi_output_free`.
@@ -39,6 +41,7 @@ pub unsafe extern "C" fn takumi_render_html(
     device_pixel_ratio: f32,
     format: *const c_char,
     quality: u8,
+    base_font_size: f32,
 ) -> *mut OutputHandle {
     if ctx.is_null() || html.is_null() {
         set_last_error("null pointer: ctx or html");
@@ -93,8 +96,12 @@ pub unsafe extern "C" fn takumi_render_html(
 
     // Render
     let dpr = if device_pixel_ratio > 0.0 { device_pixel_ratio } else { 1.0 };
+    let mut viewport = Viewport::new((width, height)).with_device_pixel_ratio(dpr);
+    if base_font_size > 0.0 {
+        viewport = viewport.with_font_size(base_font_size);
+    }
     let render_options = takumi::rendering::RenderOptions::builder()
-        .viewport(Viewport::new((width, height)).with_device_pixel_ratio(dpr))
+        .viewport(viewport)
         .node(root_node)
         .global(&ctx_data.global)
         .stylesheet(stylesheet)
