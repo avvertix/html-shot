@@ -11,8 +11,8 @@ name = "takumi_php"
 crate-type = ["cdylib"]
 
 [dependencies]
-takumi = { version = "1.0.15", features = ["woff2", "woff"] }
-parley = { version = "0.8", default-features = false }
+takumi = { version = "1.1.2", features = ["woff2", "woff", "svg"] }
+parley = { version = "0.9", default-features = false, features = ["std"] }
 scraper = "0.22"
 ego-tree = "0.10"
 
