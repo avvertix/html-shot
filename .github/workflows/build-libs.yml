@@ -1,0 +1,88 @@
+name: Build Libraries
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+
+
+jobs:
+  build:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            lib_src: rust/target/release/libtakumi_php.so
+            lib_dst: lib/libtakumi_php.so
+            artifact: libtakumi_php-linux
+          - os: macos-latest
+            lib_src: rust/target/release/libtakumi_php.dylib
+            lib_dst: lib/libtakumi_php.dylib
+            artifact: libtakumi_php-macos
+          - os: windows-latest
+            lib_src: rust/target/release/takumi_php.dll
+            lib_dst: lib/takumi_php.dll
+            artifact: libtakumi_php-windows
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            rust/target
+          key: ${{ runner.os }}-cargo-release-${{ hashFiles('rust/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-release
+
+      - name: Build Rust library (release)
+        working-directory: rust
+        run: cargo build --release
+
+      - name: Stage library
+        shell: bash
+        run: cp ${{ matrix.lib_src }} ${{ matrix.lib_dst }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.lib_dst }}
+
+  commit-libs:
+    name: Commit libraries to repo
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v8
+        with:
+          merge-multiple: true
+
+      - name: Commit and push libraries
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add lib/
+          git diff --staged --quiet || git commit -m "chore: update prebuilt libraries for ${{ github.ref_name }}"
+          git tag -f ${{ github.ref_name }}
+          git push origin ${{ github.ref_name }} --force
