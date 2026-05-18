@@ -82,7 +82,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add lib/
+          git add --force lib/
           git diff --staged --quiet || git commit -m "chore: update prebuilt libraries for ${{ github.ref_name }}"
           git tag -f ${{ github.ref_name }}
           git push origin ${{ github.ref_name }} --force
