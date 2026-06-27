@@ -375,7 +375,7 @@ version = "0.34.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b7c66d1cd8ed61bf80b38432613a7a2f09401ab8d0501110655f8b341484a3e3"
 dependencies = [
- "cssparser-macros",
+ "cssparser-macros 0.6.1",
  "dtoa-short",
  "itoa",
  "phf 0.11.3",
@@ -384,11 +384,11 @@ dependencies = [
 
 [[package]]
 name = "cssparser"
-version = "0.36.0"
+version = "0.37.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dae61cf9c0abb83bd659dab65b7e4e38d8236824c85f0f804f173567bda257d2"
+checksum = "8c9cdaae01d5ed7882b04d795e7f752f46ff52d2fa3b50a20d28c464510bba98"
 dependencies = [
- "cssparser-macros",
+ "cssparser-macros 0.7.0",
  "dtoa-short",
  "itoa",
  "phf 0.13.1",
@@ -400,6 +400,16 @@ name = "cssparser-macros"
 version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13b588ba4ac1a99f7f2964d24b3d896ddc6bf847ee3855dbd4366f058cfcd331"
+dependencies = [
+ "quote",
+ "syn 2.0.117",
+]
+
+[[package]]
+name = "cssparser-macros"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "10a2a99df6e410a8ff4245aa2006499ea662245f967cc7c0a38c83ef8eb44dbf"
 dependencies = [
  "quote",
  "syn 2.0.117",
@@ -604,6 +614,7 @@ checksum = "843fba2746e448b37e26a819579957415c8cef339bf08564fe8b7ddbd959573c"
 dependencies = [
  "crc32fast",
  "miniz_oxide",
+ "zlib-rs",
 ]
 
 [[package]]
@@ -1855,12 +1866,12 @@ dependencies = [
 
 [[package]]
 name = "selectors"
-version = "0.37.0"
+version = "0.38.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2cfaaa6035167f0e604e42723c7650d59ee269ef220d7bbe0565602c8a0173b9"
+checksum = "8adfa1c298912827b8a28b223b3b874357397ae706e6190acd9bf28cee99114d"
 dependencies = [
  "bitflags 2.11.0",
- "cssparser 0.36.0",
+ "cssparser 0.37.0",
  "derive_more 2.1.1",
  "log",
  "new_debug_unreachable",
@@ -1886,6 +1897,16 @@ checksum = "9a8e94ea7f378bd32cbbd37198a4a91436180c5bb472411e48b5ec2e2124ae9e"
 dependencies = [
  "serde_core",
  "serde_derive",
+]
+
+[[package]]
+name = "serde_bytes"
+version = "0.11.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a5d440709e79d88e51ac01c4b72fc6cb7314017bb7da9eeff678aa94c10e3ea8"
+dependencies = [
+ "serde",
+ "serde_core",
 ]
 
 [[package]]
@@ -2085,9 +2106,9 @@ dependencies = [
 
 [[package]]
 name = "taffy"
-version = "0.10.0"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96fb9d22ffe63c7aa8996275aa0017404b513619bb6cf6309d9f822095afb414"
+checksum = "dfde4e2f8595f222ceaae1fb16b4963952e9b33e358869dc4cd6316b0e0790cd"
 dependencies = [
  "arrayvec",
  "grid",
@@ -2097,14 +2118,13 @@ dependencies = [
 
 [[package]]
 name = "takumi"
-version = "1.1.2"
+version = "1.8.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2e9f7233efe9604307fd5d536833632b043072b02d565d9a983237f76338717a"
+checksum = "0db189b590e71f063e7e8c457216cf6adc4c2fbf6518b9dc9502416c507e2b3c"
 dependencies = [
- "bitflags 2.11.0",
  "bytemuck",
  "color",
- "cssparser 0.36.0",
+ "cssparser 0.37.0",
  "dashmap",
  "data-url",
  "gif",
@@ -2112,19 +2132,18 @@ dependencies = [
  "image-webp",
  "libwebp-sys",
  "parley",
- "paste",
- "phf 0.13.1",
  "png",
- "precomputed-hash",
  "rayon",
  "resvg",
  "roxmltree",
- "selectors 0.37.0",
+ "selectors 0.38.0",
  "serde",
+ "serde_bytes",
  "skrifa",
  "smallvec",
  "svgtypes",
  "taffy",
+ "takumi-css",
  "thiserror",
  "tiny-skia",
  "typed-builder",
@@ -2133,8 +2152,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "takumi-css"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fbf997e767da4e99e5ea5718185e990e8ee92ef5af76a0f7bd2bb753f425eade"
+dependencies = [
+ "bitflags 2.11.0",
+ "bytemuck",
+ "color",
+ "cssparser 0.37.0",
+ "image",
+ "parley",
+ "paste",
+ "phf 0.13.1",
+ "precomputed-hash",
+ "selectors 0.38.0",
+ "serde",
+ "smallvec",
+ "taffy",
+ "thiserror",
+ "tiny-skia",
+ "typed-builder",
+]
+
+[[package]]
 name = "takumi-php"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "cbindgen",
  "ego-tree",
@@ -2724,6 +2767,12 @@ dependencies = [
  "quote",
  "syn 2.0.117",
 ]
+
+[[package]]
+name = "zlib-rs"
+version = "0.6.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "977347db8caa080403f6b6b7c1cda9479a8e869316f7e13a59b19076a40f94e3"
 
 [[package]]
 name = "zmij"
