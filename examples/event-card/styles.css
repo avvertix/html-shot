@@ -1,0 +1,68 @@
+/*
+ * Custom stylesheet for the event card.
+ *
+ * Everything that styles the card lives here, not inline on the elements.
+ * The example loads this file and hands it to HtmlShot through the
+ * `stylesheets` option, so the HTML only carries semantic class names.
+ */
+
+.card {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    font-family: Geist, sans-serif;
+    color: #ffffff;
+    background-image: linear-gradient(115deg, #5460c8 0%, #7d79bb 52%, #a39ba2 100%);
+}
+
+.left {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 60px;
+}
+
+.logo {
+    width: 96px;
+    height: 36px;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    margin-top: auto;
+    gap: 32px;
+}
+
+.title {
+    margin: 0;
+    max-width: 540px;
+    font-size: 46px;
+    font-weight: 600;
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+}
+
+.rsvp {
+    display: flex;
+    align-self: flex-start;
+    padding: 14px 36px;
+    border-radius: 9999px;
+    background-color: #ffffff;
+    color: #4b3f8f;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.right {
+    display: flex;
+    width: 470px;
+    padding: 34px 34px 34px 0;
+}
+
+.photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 28px;
+}
