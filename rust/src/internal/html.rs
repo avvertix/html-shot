@@ -8,9 +8,12 @@
 //! - Everything else becomes `Node::container` with class/id/tag metadata
 //! - `<html>`, `<head>`, and `<body>` wrappers are treated as transparent
 
+use std::str::FromStr;
+
 use scraper::node::Node as HtmlNode;
 use scraper::Html;
 use takumi::layout::node::Node;
+use takumi::layout::style::tw::TailwindValues;
 
 /// Parse `html` and return a root `Node` plus any extra CSS strings.
 ///
@@ -158,7 +161,7 @@ fn convert_node(
     }
 }
 
-/// Apply class, id, and inline-style metadata to a node.
+/// Apply class, id, tailwind (`tw`), and inline-style metadata to a node.
 fn apply_metadata(
     mut node: Node,
     element: &scraper::node::Element,
@@ -185,6 +188,15 @@ fn apply_metadata(
     }
     if let Some(id) = element.attr("id") {
         node = node.with_id(id);
+    }
+
+    // Promote the `tw` attribute (Satori/Takumi inline Tailwind) to the node's
+    // Tailwind-derived style. Mirrors `takumi-helpers`' `tailwindClassesProperty`.
+    // Unparseable utilities are dropped rather than failing the whole render.
+    if let Some(tw) = element.attr("tw") {
+        if let Ok(values) = TailwindValues::from_str(tw) {
+            node = node.with_tw(values);
+        }
     }
     node
 }
@@ -243,6 +255,24 @@ mod tests {
         assert!(
             p[1] > p[0],
             "expected greenish pixel at (40,40); RGBA={p:?}"
+        );
+    }
+
+    #[test]
+    fn tw_attribute_background_renders_opaque() {
+        // The `tw` attribute (Satori/Takumi inline Tailwind) must be resolved
+        // into actual styles, not silently dropped.
+        let image = render_html(
+            r#"<div tw="w-[100px] h-[100px] bg-[#ff0000]"></div>"#,
+        );
+        let p = image.get_pixel(50, 50);
+        assert!(
+            p[3] > 0,
+            "expected opaque pixel at (50,50) from tw attribute, got transparent; RGBA={p:?}"
+        );
+        assert!(
+            p[0] > 200,
+            "expected red pixel at (50,50) from tw attribute; RGBA={p:?}"
         );
     }
 
