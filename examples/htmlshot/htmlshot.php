@@ -26,10 +26,10 @@ $mono = "'Geist Mono', monospace";
 
 $rows = '';
 for ($i = 0; $i < 18; $i++) {
-            $marginLeft = (($i * 137) % 600);
-            $items = '';
-            for ($j = 0; $j < 15; $j++) {
-                $items .= <<<'HTML'
+    $marginLeft = (($i * 137) % 600);
+    $items = '';
+    for ($j = 0; $j < 15; $j++) {
+        $items .= <<<'HTML'
 <div style="display: flex; align-items: center; flex-shrink: 0; gap: 0.25em; margin-left: -1rem;">
   <span style="margin-right: 1rem;">Shake.</span>
   <span style="margin-right: 1rem;">Render.</span>
@@ -37,16 +37,15 @@ for ($i = 0; $i < 18; $i++) {
   <span>&nbsp;</span>
 </div>
 HTML;
-            }
-            $rows .= <<<HTML
+    }
+    $rows .= <<<HTML
 <div style="margin: 0; font-size: 64px; line-height: 0.9; font-weight: 900; color: #f4f4f0;
             font-family: Geist, sans-serif; white-space: nowrap; display: flex;
             align-items: center; margin-left: -{$marginLeft}px;">
   {$items}
 </div>
 HTML;
-        }
-
+}
 
 $html = <<<HTML
 <div style="display: flex; flex-direction: column; width: 100%; height: 100%;

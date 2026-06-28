@@ -13,7 +13,6 @@ $outputDir = __DIR__.'/output';
  * Usage:
  *   php examples/banner/banner.php
  */
-
 $COMPONENT = [
     'name' => 'v1',
     'width' => 1200,
