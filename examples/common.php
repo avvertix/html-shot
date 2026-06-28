@@ -15,7 +15,7 @@ function save_to_output(mixed $png, string $filename, string $directory): void
         mkdir($directory, 0755, true);
     }
 
-    file_put_contents($directory.'/' . $filename, $png);
+    file_put_contents($directory.'/'.$filename, $png);
 
-    echo "Saved: " . basename($directory). "/{$filename}\n";
+    echo 'Saved: '.basename($directory)."/{$filename}\n";
 }

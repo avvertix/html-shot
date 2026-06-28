@@ -7,7 +7,7 @@
  * SVG whose points are computed from a data array. Title and axis labels are
  * HTML laid over the same 1200x630 coordinate space, on top of a smooth
  * gradient background.
- * 
+ *
  * Usage:
  *   php examples/line-chart/line-chart.php
  */

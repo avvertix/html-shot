@@ -22,7 +22,7 @@ $png = HtmlShot::render($html, [
     'format' => 'png',
     'fonts' => [
         Font::fromFile("{$fontsPath}/Geist/variable/Geist[wght].ttf", 'Geist'),
-    ]
+    ],
 ]);
 
 save_to_output($png, 'simple.png', $outputDir);

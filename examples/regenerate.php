@@ -11,7 +11,6 @@
  * Usage:
  *   php examples/regenerate.php
  */
-
 $examplesDir = __DIR__;
 
 // Collect runnable example scripts: one level deep, examples/<dir>/*.php.

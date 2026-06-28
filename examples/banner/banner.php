@@ -30,14 +30,14 @@ $COMPONENT = [
         ['path' => __DIR__.'/../../tests/fonts/Geist/variable/Geist[wght].ttf',         'family' => 'Geist'],
         ['path' => __DIR__.'/../../tests/fonts/GeistMono/variable/GeistMono[wght].ttf', 'family' => 'Geist Mono'],
     ],
-    'html' => static function () use ($logo, $assetsImages): string {
+    'html' => static function () use ($assetsImages): string {
         // Build the 18-row repeated pattern
         $rows = '';
         for ($i = 0; $i < 18; $i++) {
             $marginLeft = (($i * 137) % 600);
             $items = '';
             for ($j = 0; $j < 15; $j++) {
-                $items .= <<<HTML
+                $items .= <<<'HTML'
 <div style="display: flex; align-items: center; flex-shrink: 0; gap: 0.25em; margin-left: -1rem;">
   <span style="margin-right: 1rem;">Shake.</span>
   <span style="margin-right: 1rem;">Render.</span>
@@ -82,8 +82,6 @@ HTML;
 HTML;
     },
 ];
-
-
 
 $ctx = new Context;
 foreach ($COMPONENT['fonts'] as $f) {

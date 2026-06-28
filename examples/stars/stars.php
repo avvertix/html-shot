@@ -14,7 +14,7 @@ use HtmlShot\HtmlShot;
 
 $outputDir = __DIR__.'/output';
 
-$star = $assetsImages . '/golden-star-disco-ball.png';
+$star = $assetsImages.'/golden-star-disco-ball.png';
 
 $html = <<<HTML
 <div tw="flex h-full w-full flex-col items-center justify-end bg-taupe-800 p-20">
@@ -33,7 +33,7 @@ $png = HtmlShot::render($html, [
     'format' => 'png',
     'fonts' => [
         Font::fromFile("{$fontsPath}/Geist/variable/Geist[wght].ttf", 'Geist'),
-    ]
+    ],
 ]);
 
 save_to_output($png, 'stars.png', $outputDir);

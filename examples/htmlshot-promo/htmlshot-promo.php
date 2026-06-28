@@ -14,7 +14,7 @@ use HtmlShot\HtmlShot;
 
 $outputDir = __DIR__.'/output';
 
-$logo = $assetsImages . '/htmlshot.png';
+$logo = $assetsImages.'/htmlshot.png';
 
 $html = <<<HTML
 <div tw="flex h-full w-full flex-col justify-end bg-[#16130f] p-20">
@@ -35,7 +35,7 @@ $png = HtmlShot::render($html, [
     'format' => 'png',
     'fonts' => [
         Font::fromFile("{$fontsPath}/Geist/variable/Geist[wght].ttf", 'Geist'),
-    ]
+    ],
 ]);
 
 save_to_output($png, 'htmlshot-promo.png', $outputDir);
