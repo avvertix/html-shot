@@ -3,6 +3,7 @@
 /lib/*.dylib
 /lib/*.dll
 /lib/*.h
+/natives.lock
 /rust/target/
 *.log
 
