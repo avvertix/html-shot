@@ -26,14 +26,38 @@ animations.
 
 ## Installation
 
+**Requirements**
+
+- PHP 8.3 or higher
+- FFI extension enabled `ext-ffi`
+
 ```bash
 composer require avvertix/html-shot
 ```
 
-**Requirements**
+The package needs a compiled native library to render images.
+Download the one matching your platform and the installed package
+version with the bundled console command:
 
-- PHP 8.2 or higher
-- FFI extension enabled `ext-ffi` | enabled (`ffi.enable = true` in `php.ini`) |
+```bash
+vendor/bin/htmlshot install
+```
+
+This fetches the correct binary from the matching GitHub release, verifies its
+checksum, and stores it in the package `lib/` directory.
+
+After upgrading the package, refresh the native library to match the new
+version:
+
+```bash
+composer update avvertix/html-shot
+vendor/bin/htmlshot update
+```
+
+> [!NOTE]
+> A natives.lock file is added to the root of the project. Commit this file to your repo to ensure that each time you'll get the same native version.
+
+
 
 
 ## Quick Example
@@ -94,6 +118,36 @@ extension=ffi
 ffi.enable=true
 ```
 
+### What is the natives.lock file?
+
+The install writes a `natives.lock` file to your project root (next to
+`composer.lock`). It holds the resolved version and the download
+URL and checksum of every platform's binary for that release:
+
+```json
+{
+  "packages": [
+    {
+      "name": "avvertix/html-shot",
+      "version": "v0.1.0",
+      "assets": {
+        "libtakumi_php.so":    { "url": "…/v0.1.0/libtakumi_php.so",    "digest": "sha256:…" },
+        "libtakumi_php.dylib": { "url": "…/v0.1.0/libtakumi_php.dylib", "digest": "sha256:…" },
+        "takumi_php.dll":      { "url": "…/v0.1.0/takumi_php.dll",      "digest": "sha256:…" }
+      },
+      "installed-at": "2026-06-28T08:46:14Z"
+    }
+  ]
+}
+```
+
+**Commit this file**: when it is present, `vendor/bin/htmlshot install`
+reinstalls exactly the locked version and verifies the download against the
+locked checksum, giving deterministic installs across machines and CI.
+
+Because the lock captures every platform's asset, a lock generated on one OS
+(e.g. while developing on Windows) lets a build or deployment on a different OS
+install the matching binary deterministically and verify it offline.
 
 ## Contributing
 
