@@ -68,6 +68,26 @@ class HtmlShotTest extends TestCase
         $this->assertSame(0, $rgba['alpha'], 'Pixel should be fully opaque');
     }
 
+    public function test_render_resolves_tw_attribute(): void
+    {
+        // The `tw` attribute (Satori/Takumi inline Tailwind) must be resolved into
+        // real styles rather than silently dropped during HTML parsing.
+        $bytes = HtmlShot::render('<div tw="w-[100px] h-[100px] bg-[#ff0000]"></div>', [
+            'width' => 200,
+            'height' => 200,
+        ]);
+
+        $this->assertNotEmpty($bytes);
+        $img = imagecreatefromstring($bytes);
+        $this->assertNotFalse($img);
+
+        $rgba = imagecolorsforindex($img, imagecolorat($img, 50, 50));
+        $this->assertGreaterThan(200, $rgba['red'], 'Pixel should be red from tw background');
+        $this->assertLessThan(50, $rgba['green']);
+        $this->assertLessThan(50, $rgba['blue']);
+        $this->assertSame(0, $rgba['alpha'], 'Pixel should be fully opaque');
+    }
+
     public function test_render_with_device_pixel_ratio(): void
     {
         $bytes1x = HtmlShot::render('<div style="background:red;width:100%;height:100%"></div>', [
