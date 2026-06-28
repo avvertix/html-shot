@@ -5,6 +5,7 @@
 /phpunit.xml.dist export-ignore
 /phpstan.neon.dist export-ignore
 /docs export-ignore
+/examples export-ignore
 /tests export-ignore
 /include export-ignore
 /rust export-ignore
