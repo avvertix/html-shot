@@ -18,7 +18,7 @@ PNG in that example's `output/` folder.
 | --- | --- |
 | `simple/` | The **`HtmlShot::render()` façade**, inline CSS, loading a single font |
 | `tailwind/` | Styling with the **`tw` Tailwind** utility attribute instead of CSS |
-| `htmlshot-promo/` | Combining `tw` classes with a local PNG via `<img src>` |
+| `htmlshot/` | Generate HtmlShot Open Graph image |
 | `stars/` | Absolute positioning and a full-bleed background image with `tw` |
 | `changelog/` | Building repeated rows from a PHP array, uppercase tag labels |
 | `event/` | A full-height flex column split into three regions, letter-spacing |
