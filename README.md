@@ -3,6 +3,9 @@
 HTML to image rendering for PHP, powered by Rust and [Takumi](https://github.com/kane50613/takumi).
 Generate Open Graph images and more from HTML/CSS without headless browser overhead.
 
+<img src="./examples/htmlshot/output/htmlshot.png" width="480px">
+
+
 ## Features
 
 - **No headless browser.** Rendering runs in-process through a native Rust library, so there is no Chromium to install, launch, or keep alive.
@@ -45,12 +48,18 @@ vendor/bin/htmlshot update
 ```
 
 > [!NOTE]
-> A natives.lock file is added to the root of the project. Commit this file to your repo to ensure that each time you'll get the same native version.
+> A `natives.lock` file is added to the root of the project. Commit this file to your repo to ensure that each time you'll get the same native version.
 
 
+## Documentation
+
+- [Getting started](docs/getting-started.md) — install and render your first image
+- [Fonts & styles](docs/fonts-and-styles.md) — custom fonts, inline/`<style>`/external CSS, and `tw` utilities
+- [Advanced usage](docs/advanced.md) — HiDPI output and using `Context` + `Renderer` directly
+- [Examples](examples/README.md) — runnable Open Graph and social-card scripts
 
 
-## Quick Example
+## Quick start
 
 The fastest way in is the `HtmlShot` façade. Give it some HTML and a few
 options, and it hands back the encoded image bytes:
@@ -81,6 +90,12 @@ Available options: `width`, `height`, `format` (`png` | `webp` | `jpeg`),
 `quality` (1–100 for the lossy formats), `stylesheets` (extra CSS),
 `fonts`, and `devicePixelRatio` (e.g. `2.0` for Retina output).
 
+
+> [!NOTE]
+> See the [`examples/`](examples/) directory for deep dive with fonts, custom styles, images and high resolution.
+
+
+
 ### Reusing a context
 
 The façade loads fonts on every call. When you render repeatedly, build a
@@ -108,6 +123,7 @@ foreach ($posts as $post) {
     file_put_contents("{$post->slug}@2x.webp", $webp);
 }
 ```
+
 
 
 ## Deep Dive
