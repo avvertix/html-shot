@@ -2,6 +2,14 @@
 
 All notable changes to `html-shot` will be documented in this file.
 
+## v0.3.1 - 2026-07-01
+
+### What's Changed
+
+* Ensure takumi_php.h header file is present in release by @avvertix in https://github.com/avvertix/html-shot/pull/11
+
+**Full Changelog**: https://github.com/avvertix/html-shot/compare/v0.3.0...v0.3.1
+
 ## v0.3.0 - 2026-06-28
 
 ### Documentation
